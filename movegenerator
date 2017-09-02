@@ -1,40 +1,49 @@
 import argparse, json
+
 alpha_to_index_mapping = {
-        "a" : 0,
-        "b": 1,
-        "c": 2,
-        "d": 3,
-        "e": 4,
-        "f": 5,
-        "g": 6,
-        "h": 7
-    }
+    "a": 0,
+    "b": 1,
+    "c": 2,
+    "d": 3,
+    "e": 4,
+    "f": 5,
+    "g": 6,
+    "h": 7
+}
 index_to_alpha_mapping = {
-        0: "a",
-        1: "b",
-        2: "c",
-        3: "d",
-        4: "e",
-        5: "f",
-        6: "g",
-        7: "h"
-    }
+    0: "a",
+    1: "b",
+    2: "c",
+    3: "d",
+    4: "e",
+    5: "f",
+    6: "g",
+    7: "h"
+}
+
+
 def getColAndRow(pos):
+    """Takes a chess oriented position and returns its matrix equivalent"""
     pos = pos.strip().lower()
     stringcol, stringrow = pos
     row = int(stringrow) - 1
     col = alpha_to_index_mapping[stringcol]
-    return (col, row)
+    return col, row
+
+
+def getPos(col, row):
+    return "".join([index_to_alpha_mapping[col], str(row + 1)])
+
 
 def getmovesKnight(pos, chessBoard, type='W'):
-    """Takes position of the knight and the chess board and returns all position positions of that knight
+    """Takes position of the knight, the chess board, and piece type and returns all position positions of that knight
     on the specified chess board"""
     col, row = getColAndRow(pos)
     moves = []
     deltas = [(-2, -1), (-2, +1), (+2, -1), (+2, +1), (-1, -2), (-1, +2), (+1, -2), (+1, +2)]
     for delta in deltas:
         move = (col + delta[0], row + delta[1])
-        if(move[0] < 0 or move[1] < 0):
+        if move[0] < 0 or move[1] < 0:
             continue
 
         piece = chessBoard[move[0]][move[1]]
@@ -45,63 +54,158 @@ def getmovesKnight(pos, chessBoard, type='W'):
     possiblemoves = ["".join([index_to_alpha_mapping[i[0]], str(i[1] + 1)]) for i in moves]
     print(possiblemoves)
 
-def getRookMoves(pos, chessBoard, type = 'W'):
-    col,row = getColAndRow(pos)
+
+def getmovesRook(pos, chessBoard, type='W'):
+    col, row = getColAndRow(pos)
     moves = []
     for j in range(1, 8 - col):
         piece = chessBoard[col + j][row]
-        if(piece is not '0'):
-            if(piece[0] is not type):
+        if piece is not '0':
+            if piece[0] is not type:
                 moves.append((col + j, row))
             break
         else:
             moves.append((col + j, row))
 
     for j in range(col):
-        piece = chessBoard[col - (j+1)][row]
-        if (piece is not '0'):
-            if (piece[0] is 'B'):
-                moves.append((col - (j+1), row))
+        piece = chessBoard[col - (j + 1)][row]
+        if piece is not '0':
+            if piece[0] is 'B':
+                moves.append((col - (j + 1), row))
             break
         else:
-            moves.append((col - (j+1), row))
+            moves.append((col - (j + 1), row))
 
     for i in range(1, 8 - row):
         piece = chessBoard[col][row + i]
-        if(piece is not '0'):
-            if(piece[0] is 'B'):
+        if piece is not '0':
+            if piece[0] is 'B':
                 moves.append((col, row + i))
             break
         else:
             moves.append((col, row + i))
 
     for i in range(row):
-        piece = chessBoard[col][row - (i+1)]
-        if (piece is not '0'):
-            if (piece[0] is 'B'):
-                moves.append((col, row - (i+1)))
+        piece = chessBoard[col][row - (i + 1)]
+        if piece is not '0':
+            if piece[0] is 'B':
+                moves.append((col, row - (i + 1)))
             break
         else:
-            moves.append((col, row - (i+1)))
+            moves.append((col, row - (i + 1)))
 
-    possiblemoves = ["".join([index_to_alpha_mapping[i[0]], str(i[1] + 1)]) for i in moves]
+    possiblemoves = [getPos(i[0], i[1]) for i in moves]
     print(possiblemoves)
 
-def main():
-    pass
+
+def getmovesBishop(pos, chessBoard, type='W'):
+    col, row = getColAndRow(pos)
+    moves = []
+    for j in range(1, 8 - col):
+        piece = chessBoard[col + j][row]
+        if piece is not '0':
+            if piece[0] is not type:
+                moves.append((col + j, row))
+            break
+        else:
+            moves.append((col + j, row))
+
+    for j in range(col):
+        piece = chessBoard[col - (j + 1)][row]
+        if piece is not '0':
+            if piece[0] is 'B':
+                moves.append((col - (j + 1), row))
+            break
+        else:
+            moves.append((col - (j + 1), row))
+
+    possiblemoves = [getPos(i[0], i[1]) for i in moves]
+    print(possiblemoves)
+
+
+def getmovesKing(pos, chessBoard, type='W'):
+    """Takes position of the knight and the chess board and returns all position positions of that knight
+        on the specified chess board"""
+    col, row = getColAndRow(pos)
+    moves = []
+    deltas = [(0, 1), (1, 1), (1, 0), (0, -1), (-1, -1), (-1, 0), (1, -1), (-1, 1)]
+    for delta in deltas:
+        move = (col + delta[0], row + delta[1])
+        if move[0] < 0 or move[1] < 0:
+            continue
+
+        piece = chessBoard[move[0]][move[1]]
+        if piece[0] is type:
+            continue
+        moves.append(move)
+
+    possiblemoves = [getPos(i[0], i[1]) for i in moves]
+    print(possiblemoves)
+
+
+def getmovesPawn(pos, chessBoard, type='W'):
+    """Takes position of the knight and the chess board and returns all position positions of that knight
+            on the specified chess board"""
+    col, row = getColAndRow(pos)
+    moves = []
+    piece = chessBoard[col][row + 1]
+    if piece is '0':
+        moves.append((col, row + 1))
+        #account for starting pawn position
+        piece = chessBoard[col][row + 2]
+        if row is 1 and piece is '0':
+            moves.append((col, row + 2))
+
+    #check for killing positions
+    delta_kill = [(-1, 1), (1, 1)]
+    for delta in delta_kill:
+        move = (col + delta[0], row + delta[1])
+        if move[0] < 0 or move[1] < 0:
+            continue
+
+        piece = chessBoard[move[0]][move[1]]
+        if piece[0] is type or piece is '0':
+            continue
+        moves.append(move)
+
+    possiblemoves = [getPos(i[0], i[1]) for i in moves]
+    print(possiblemoves)
+
+def getmovesBishop(pos, chessBoard, type='W'):
+    col, row = getColAndRow(pos)
+    moves = []
+    for j in range(1, 8 - col):
+        piece = chessBoard[col + j][row]
+        if piece is not '0':
+            if piece[0] is not type:
+                moves.append((col + j, row))
+            break
+        else:
+            moves.append((col + j, row))
+
+    for j in range(col):
+        piece = chessBoard[col - (j + 1)][row]
+        if piece is not '0':
+            if piece[0] is 'B':
+                moves.append((col - (j + 1), row))
+            break
+        else:
+            moves.append((col - (j + 1), row))
+
+    possiblemoves = [getPos(i[0], i[1]) for i in moves]
+    print(possiblemoves)
 
 if __name__ == "__main__":
-    Board = [['0'] * 8 for i in range(8)] #an 8 by 8 board
+    Board = [['0'] * 8 for i in range(8)]  # an 8 by 8 board
     (col, row) = getColAndRow('g2')
-    Board[col][ row] = 'BK'
-    getRookMoves('C2', Board)
+    Board[col][row] = 'BK'
+    getmovesPawn('C2', Board)
     """
     *prototype
     User input:
         Take White board conf
         Take Black board conf
         Take Piece to evaluate
-    Conversion: 
-        Convert inputs to board conf
-    TBD
+        Add check for proper piece placement (especially pawn) 
+        
     """
