@@ -20,8 +20,15 @@ index_to_alpha_mapping = {
     6: "g",
     7: "h"
 }
-
-
+"""
+def printBoard(chessBoard):
+    print('------------------------------------')
+    for i in range(len(chessBoard)):
+        for j in range(len(chessBoard[i])):
+            print(chessBoard[i][j] + " | ", end='')
+        print()
+    print('------------------------------------')
+"""
 def getColAndRow(pos):
     """Takes a chess oriented position and returns its matrix equivalent"""
     pos = pos.strip().lower()
@@ -195,37 +202,33 @@ def getmovesQueen(pos, chessBoard, color='W'):
         possiblemoves.append(move)
     return possiblemoves
 
-if __name__ == "__main__":
+def main(): # pragma: no cover
     Board = [['0'] * 8 for i in range(8)]  # an 8 by 8 board
 
-    """
-    *prototype
-    User input:
-        Take White board conf
-        Take Black board conf
-        Take Piece to evaluate
-        Add check for proper piece placement (especially pawn) 
-        
-    """
-    print("Example: \n WHITE: Rf1, Kg1, Pf2, Ph2, Pg3 \n BLACK: Kb8, Ne8, Pa7, Pb7, Pc7, Ra5 \n PIECE TO MOVE: Rf1 \\"
-          "\n K, Q, R, B, N, and P to identify the King, Queen, Rook, Bishop, Knight, and Pawn respectively.")
+    print(
+        "Example: \n WHITE: Rf1, Kg1, Pf2, Ph2, Pg3 \n BLACK: Kb8, Ne8, Pa7, Pb7, Pc7, Ra5 \n PIECE TO MOVE: Rf1 \\"
+        "\n K, Q, R, B, N, and P to identify the King, Queen, Rook, Bishop, Knight, and Pawn respectively.")
     print("Enter Board Configuration:")
     white_stringval = input("WHITE: ")
     black_stringval = input("BlACK: ")
     piece_stringval = input("PIECE TO MOVE: ")
     white_vals = [i.rstrip() for i in white_stringval.split(",")]
     for pos in white_vals:
-        (col, row) = getColAndRow(pos[-2] + pos[-1])
+        pos = pos.lstrip()
+        (col, row) = getColAndRow(pos[1] + pos[2])
         Board[col][row] = 'W' + pos[0]
-    black_vals = [i.rstrip() for i in white_stringval.split(",")]
+
+    black_vals = [i.rstrip() for i in black_stringval.split(",")]
     for pos in black_vals:
+        pos = pos.lstrip()
         (col, row) = getColAndRow(pos[-2] + pos[-1])
         Board[col][row] = 'B' + pos[0]
 
     piece_type = piece_stringval[0];
+
     moves = []
     if piece_type is 'K':
-        moves = getmovesKing(piece_stringval[1]+piece_stringval[2], Board)
+        moves = getmovesKing(piece_stringval[1] + piece_stringval[2], Board)
     elif piece_type is 'Q':
         moves = getmovesQueen(piece_stringval[1] + piece_stringval[2], Board)
     elif piece_type is 'N':
@@ -238,3 +241,5 @@ if __name__ == "__main__":
         moves = getmovesRook(piece_stringval[1] + piece_stringval[2], Board)
 
     print(moves)
+if __name__ == "__main__" : # pragma: no cover
+    main()
